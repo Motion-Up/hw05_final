@@ -119,7 +119,7 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    follow= Follow.objects.filter(user=request.user)
+    follow = Follow.objects.filter(user=request.user)
     authors = User.objects.filter(following__in=follow)
     posts = Post.objects.filter(author__in=authors)
     paginator = Paginator(posts, 10)

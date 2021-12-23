@@ -255,10 +255,6 @@ class TestFollowing(TestCase):
             author=cls.author,
             text='For followers!'
         )
-        #Follow.objects.create(
-        #    user=TestFollowing.user,
-        #    author=TestFollowing.author
-        #)
 
     def setUp(self):
         # Создаем авторизованный клиент
@@ -283,7 +279,7 @@ class TestFollowing(TestCase):
 
     def test_follow(self):
         count = Follow.objects.all().count()
-        response = self.authorized_client.get(
+        self.authorized_client.get(
             reverse(
                 'posts:profile_follow',
                 kwargs={'username': TestFollowing.author}
@@ -295,7 +291,7 @@ class TestFollowing(TestCase):
         self.new_subscription()
         Post.objects.create(author=TestFollowing.author, text='fdvkdf')
         count = Follow.objects.all().count()
-        response = self.authorized_client.get(
+        self.authorized_client.get(
             reverse(
                 'posts:profile_unfollow',
                 kwargs={'username': TestFollowing.author}
