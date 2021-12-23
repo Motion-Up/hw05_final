@@ -286,6 +286,11 @@ class TestFollowing(TestCase):
             )
         )
         self.assertEqual(Follow.objects.all().count(), count + 1)
+        self.assertTrue(Follow.objects.filter(
+            user=TestFollowing.user,
+            author=TestFollowing.author
+        ).exists()
+        )
 
     def test_unfollow(self):
         self.new_subscription()
@@ -298,6 +303,11 @@ class TestFollowing(TestCase):
             )
         )
         self.assertNotEqual(Follow.objects.all().count(), count)
+        self.assertFalse(Follow.objects.filter(
+            user=TestFollowing.user,
+            author=TestFollowing.author
+        ).exists()
+        )
 
     def test_new_post_for_follower(self):
         author = self.new_subscription()
