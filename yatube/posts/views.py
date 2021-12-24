@@ -9,9 +9,7 @@ from utils.utils import create_paginator
 
 def index(request):
     post_list = Post.objects.select_related('group').all()
-    paginator = create_paginator(post_list, COUNT_POST_IN_PAGE)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = create_paginator(request, post_list, COUNT_POST_IN_PAGE)
     index = True
     context = {
         'page_obj': page_obj,
@@ -23,9 +21,7 @@ def index(request):
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     post_list = Post.objects.filter(group=group)
-    paginator = create_paginator(post_list, COUNT_POST_IN_PAGE)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = create_paginator(request, post_list, COUNT_POST_IN_PAGE)
     context = {
         'group': group,
         'page_obj': page_obj,
@@ -36,9 +32,7 @@ def group_posts(request, slug):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     posts = Post.objects.filter(author=author)
-    paginator = create_paginator(posts, COUNT_POST_IN_PAGE)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = create_paginator(request, posts, COUNT_POST_IN_PAGE)
     count = posts.count()
     following = False
     if request.user.is_authenticated and Follow.objects.filter(
@@ -57,7 +51,7 @@ def profile(request, username):
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     author = post.author
-    count = Post.objects.all().filter(author=author).count()
+    count = Post.objects.filter(author=author).count()
     form = CommentForm(request.POST or None)
     comments = Comment.objects.filter(post=post)
     context = {
@@ -125,9 +119,7 @@ def follow_index(request):
     follows = Follow.objects.filter(user=request.user)
     authors = User.objects.filter(following__in=follows)
     posts = Post.objects.filter(author__in=authors)
-    paginator = create_paginator(posts, COUNT_POST_IN_PAGE)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = create_paginator(request, posts, COUNT_POST_IN_PAGE)
     follow = True
     context = {
         'page_obj': page_obj,

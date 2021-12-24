@@ -87,10 +87,7 @@ class PostCreateFormTests(TestCase):
         post = Post.objects.order_by('id').last()
         self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertEqual(post.text, self.form_data['text'])
-        self.assertTrue(Post.objects.filter(
-            image=post.image
-        ).exists()
-        )
+        self.assertTrue(post.image)
 
     def test_edit_post(self):
         post_before_edit = Post.objects.get(id=PostCreateFormTests.post.id)
@@ -108,10 +105,7 @@ class PostCreateFormTests(TestCase):
         )
         post = Post.objects.get(id=PostCreateFormTests.post.id)
         self.assertNotEqual(post.text, post_before_edit.text)
-        self.assertTrue(Post.objects.filter(
-            image=post.image
-        ).exists()
-        )
+        self.assertTrue(post.image)
 
     def test_create_post_guest_client(self):
         posts_count = Post.objects.count()
@@ -150,10 +144,7 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertEqual(post.group.id, self.form_data_with_group['group'])
         self.assertEqual(post.text, self.form_data_with_group['text'])
-        self.assertTrue(Post.objects.filter(
-            image=post.image
-        ).exists()
-        )
+        self.assertTrue(post.image)
 
     def test_edit_post_with_group(self):
         post_before_edit = Post.objects.get(id=PostCreateFormTests.post.id)
@@ -171,10 +162,7 @@ class PostCreateFormTests(TestCase):
         )
         post = Post.objects.get(id=PostCreateFormTests.post.id)
         self.assertNotEqual(post.text, post_before_edit.text)
-        self.assertTrue(Post.objects.filter(
-            image=post.image
-        ).exists()
-        )
+        self.assertTrue(post.image)
 
     def test_create_comment(self):
         """Проверяем комментарий авторизованным пользователем и редирект"""
@@ -193,13 +181,9 @@ class PostCreateFormTests(TestCase):
         )
         comment = Comment.objects.order_by('id').last()
         self.assertEqual(Comment.objects.count(), comments_count + 1)
+        self.assertEqual(comment.author, self.form_data_comment['author'])
         self.assertEqual(comment.text, self.form_data_comment['text'])
-        self.assertTrue(Comment.objects.filter(
-            post=PostCreateFormTests.post,
-            text=self.form_data_comment['text'],
-            author=self.form_data_comment['author']
-        ).exists()
-        )
+        self.assertEqual(comment.post, self.form_data_comment['post'])
 
     def test_create_comment_guest_client(self):
         """Проверяем комментарий не авторизованным пользователем и редирект"""
