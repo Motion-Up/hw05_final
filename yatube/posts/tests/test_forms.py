@@ -39,7 +39,7 @@ class PostCreateFormTests(TestCase):
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def setUp(self):
-        small_gif = (
+        self.small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
             b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
@@ -53,7 +53,7 @@ class PostCreateFormTests(TestCase):
             'text': 'Тестовый заголовок 5',
             'image': SimpleUploadedFile(
                 name='1.gif',
-                content=small_gif,
+                content=self.small_gif,
                 content_type='image/gif'
             )
         }
@@ -62,7 +62,7 @@ class PostCreateFormTests(TestCase):
             'group': Group.objects.first().id,
             'image': SimpleUploadedFile(
                 name='2.gif',
-                content=small_gif,
+                content=self.small_gif,
                 content_type='image/gif'
             )
         }
@@ -87,7 +87,11 @@ class PostCreateFormTests(TestCase):
         post = Post.objects.order_by('id').last()
         self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertEqual(post.text, self.form_data['text'])
-        self.assertTrue(post.image)
+        image_content = open(
+            f'{TEMP_MEDIA_ROOT}/{post.image.name}',
+            'rb'
+        ).read()
+        self.assertEqual(image_content, self.small_gif)
 
     def test_edit_post(self):
         post_before_edit = Post.objects.get(id=PostCreateFormTests.post.id)
@@ -105,7 +109,11 @@ class PostCreateFormTests(TestCase):
         )
         post = Post.objects.get(id=PostCreateFormTests.post.id)
         self.assertNotEqual(post.text, post_before_edit.text)
-        self.assertTrue(post.image)
+        image_content = open(
+            f'{TEMP_MEDIA_ROOT}/{post.image.name}',
+            'rb'
+        ).read()
+        self.assertEqual(image_content, self.small_gif)
 
     def test_create_post_guest_client(self):
         posts_count = Post.objects.count()
@@ -144,7 +152,11 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertEqual(post.group.id, self.form_data_with_group['group'])
         self.assertEqual(post.text, self.form_data_with_group['text'])
-        self.assertTrue(post.image)
+        image_content = open(
+            f'{TEMP_MEDIA_ROOT}/{post.image.name}',
+            'rb'
+        ).read()
+        self.assertEqual(image_content, self.small_gif)
 
     def test_edit_post_with_group(self):
         post_before_edit = Post.objects.get(id=PostCreateFormTests.post.id)
@@ -162,7 +174,11 @@ class PostCreateFormTests(TestCase):
         )
         post = Post.objects.get(id=PostCreateFormTests.post.id)
         self.assertNotEqual(post.text, post_before_edit.text)
-        self.assertTrue(post.image)
+        image_content = open(
+            f'{TEMP_MEDIA_ROOT}/{post.image.name}',
+            'rb'
+        ).read()
+        self.assertEqual(image_content, self.small_gif)
 
     def test_create_comment(self):
         """Проверяем комментарий авторизованным пользователем и редирект"""
